@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DR Fruit Delivery - Menu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="menu-page">
+
+<h1>DR Fruit Delivery - Menu</h1>
+<div id="productList">Loading products...</div>
+
+<!-- Embedded XML Data -->
+<script id="xmlData" type="text/xml">
+<productlisting title="DR Fruit Delivery"> 
+  <product>
+    <name>Banana</name>
+    <description>Good for potassium</description>
+    <cost>70.30</cost> 
+    <shipping>50.00</shipping>
+  </product>  
+  <product> 
+    <name>Avocado</name>
+    <description>Good for natural fat</description>
+    <cost>120.00</cost>
+    <shipping>85.00</shipping>
+  </product>
+  <product>
+    <name>Apple</name>
+    <description>Good flavour</description>
+    <cost>170.00</cost>
+    <shipping>30.00</shipping>
+  </product> 
+</productlisting>
+</script>
+
+<script>
+  // Parse embedded XML and display products
+  const xmlString = document.getElementById('xmlData').textContent.trim();
+  const xml = new DOMParser().parseFromString(xmlString, "text/xml");
+  const container = document.getElementById('productList');
+  const products = xml.getElementsByTagName('product');
+  container.innerHTML = ''; // Clear loading message
+
+  const fruitEmoji = {
+    "Banana": "🍌",
+    "Avocado": "🥑",
+    "Apple": "🍎"
+  };
+
+  for (let i = 0; i < products.length; i++) {
+    const rawName = products[i].getElementsByTagName('name')[0].textContent.trim();
+    const name = `${fruitEmoji[rawName] || ""} ${rawName}`;
+    const desc = products[i].getElementsByTagName('description')[0].textContent;
+    const cost = parseFloat(products[i].getElementsByTagName('cost')[0].textContent) || 0;
+    const shipping = parseFloat(products[i].getElementsByTagName('shipping')[0].textContent) || 0;
+    const total = (cost + shipping).toFixed(2);
+
+    const div = document.createElement('div');
+    div.className = 'product';
+    div.innerHTML = `
+      <span class="name">${name}</span>
+      <span class="description">${desc}</span>
+      <span class="price">Cost: $${cost} + Shipping: $${shipping} = Total: $${total}</span>
+    `;
+
+    // Make product clickable and redirect to payment page
+    div.addEventListener('click', () => {
+      window.location.href = `payment.html?product=${encodeURIComponent(rawName)}&total=${total}`;
+    });
+
+    container.appendChild(div);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DR Fruit Delivery - Payment</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Payment Page</h1>
+
+<div class="summary" id="paymentSummary">
+<p>Loading product details...</p>
+</div>
+
+<script>
+
+/* GET DATA FROM URL */
+
+function getQueryParam(param){
+const urlParams = new URLSearchParams(window.location.search);
+return urlParams.get(param);
+}
+
+const productName = getQueryParam('product') || "Unknown Product";
+const totalPrice = getQueryParam('total') || "0.00";
+
+const summaryDiv = document.getElementById("paymentSummary");
+
+/* DISPLAY PAYMENT FORM */
+
+summaryDiv.innerHTML = `
+<p><strong>Product:</strong> ${productName}</p>
+<p><strong>Total Price:</strong> $${totalPrice}</p>
+
+<input type="email" id="email" placeholder="Enter Email">
+
+<input type="tel" id="phone" placeholder="Enter Phone Number">
+ 
+<input type="amnout" id="number" placeholder="Enter Amount To be Delivered">
+
+<input type="Address" id="Place" Placeholder="Address">
+
+<button id="payButton">Pay Now</button>
+`;
+
+/* PAY BUTTON */
+
+document.getElementById("payButton").addEventListener("click",()=>{
+
+const email = document.getElementById("email").value;
+const phone = document.getElementById("phone").value;
+
+if(!email || !phone){
+alert("Please enter email and phone number");
+return;
+}
+
+/* CREATE ORDER NUMBER */
+
+let orderCounter = localStorage.getItem("orderCounter");
+
+if(!orderCounter){
+orderCounter = 1;
+}else{
+orderCounter = parseInt(orderCounter) + 1;
+}
+
+localStorage.setItem("orderCounter", orderCounter);
+
+/* CREATE ORDER */
+
+const order = {
+orderId: orderCounter,
+product: productName,
+total: totalPrice,
+email: email,
+phone: phone,
+date: new Date().toLocaleString()
+};
+
+/* SAVE ORDER */
+
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+orders.push(order);
+
+localStorage.setItem("orders", JSON.stringify(orders));
+
+alert("Payment Successful! Order #" + orderCounter);
+
+/* GO TO INBOX */
+
+window.location.href = "inbox.html";
+
+});
+
+</script>
+
+</body>
+</html>
